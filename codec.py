@@ -1,19 +1,60 @@
 # codecs
+## 
 import numpy as np
 class Codec():
     
-    def __init__(self):
+    def __init__(self,delimeter):
         self.name = 'binary'
-        self.delimiter = '#'
+        self.delimiter = delimeter
+
     # convert text or numbers into binary form    
     def encode(self, text):
+        
         if type(text) == str:
+           
             return ''.join([format(ord(i), "08b") for i in text])
         else:
             print('Format error')
+
+
     # convert binary data into text
     def decode(self, data):
         binary = []        
+        ##divides into bytes
+        for i in range(0,len(data),8):
+            byte = data[i: i+8]
+            print("delimeter is ",self.delimiter)
+            if byte == self.encode(self.delimiter):
+                break
+            binary.append(byte)
+        text = ''
+        for byte in binary:
+            text += chr(int(byte,2) )    
+        return text 
+
+##shifts value up to the right 
+class CaesarCypher(Codec):
+    def __init__(self, shift):
+        self.name = 'caesar'
+        self.delimiter = '#'  
+        self.shift = int(3)
+        self.chars = 256      # total number of characters
+    # convert text into binary form
+    # your code should be similar to the corresponding code used for Codec
+    def encode(self, text):
+        
+        if type(text) == str:
+                                ##ord conervts to ascii number ## format turns to binary str ##joins to string of binary
+            
+            return ''.join([format((ord(i)+ self.shift), "08b") for i in text])
+        else:
+            print('Format error')
+
+
+    # convert binary data into text
+    def decode(self, data):
+        binary = []        
+        ##divides into bytes
         for i in range(0,len(data),8):
             byte = data[i: i+8]
             if byte == self.encode(self.delimiter):
@@ -21,27 +62,10 @@ class Codec():
             binary.append(byte)
         text = ''
         for byte in binary:
-            text += chr(int(byte,2))       
+            text += chr(int(byte,2) - self.shift) ## take away shift      
         return text 
-class CaesarCypher(Codec):
-    def __init__(self, shift=3):
-        self.name = 'caesar'
-        self.delimiter = '#'  
-        self.shift = shift    
-        self.chars = 256      # total number of characters
-    # convert text into binary form
-    # your code should be similar to the corresponding code used for Codec
-    def encode(self, text):
-        data = ''
         # your code goes here
-        return data
-    
-    # convert binary data into text
-    # your code should be similar to the corresponding code used for Codec
-    def decode(self, data):
-        text = ''
-        # your code goes here
-        return text
+
 # a helper class used for class HuffmanCodes that implements a Huffman tree
 class Node:
     def __init__(self, freq, symbol, left=None, right=None):
@@ -51,6 +75,9 @@ class Node:
         self.symbol = symbol
         self.code = ''
         
+##build a freuency tree, the more freuent the higher it is on tree
+##go down the tree using 1 and 0s 
+#
 class HuffmanCodes(Codec):
     
     def __init__(self):
@@ -113,7 +140,7 @@ if __name__ == '__main__':
     text = 'hello'
     #text = 'Casino Royale 10:30 Order martini'
     print('Original:', text)
-    c = Codec()
+    c = Codec('#')
     binary = c.encode(text + c.delimiter)
     print('Binary:',binary)
     data = c.decode(binary)

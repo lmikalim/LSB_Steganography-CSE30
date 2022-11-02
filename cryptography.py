@@ -1,4 +1,5 @@
 # cryptography program
+from tkinter import E
 from steganography import Steganography
 def main_menu():
     s = Steganography()
